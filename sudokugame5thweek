@@ -1,0 +1,75 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class SudokuGame extends JFrame {
+
+    JTextField[][] cells = new JTextField[4][4];
+
+    // 0 means empty cell
+    int[][] puzzle = {
+        {1, 0, 3, 0},
+        {0, 4, 0, 2},
+        {2, 0, 4, 0},
+        {0, 3, 0, 1}
+    };
+
+    public SudokuGame() {
+
+        setTitle("4x4 Sudoku Game");
+        setSize(400, 450);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JPanel gridPanel = new JPanel();
+        gridPanel.setLayout(new GridLayout(4, 4, 3, 3));
+
+        // Create 4x4 Sudoku grid
+        for (int row = 0; row < 4; row++) {
+
+            for (int col = 0; col < 4; col++) {
+
+                cells[row][col] = new JTextField();
+
+                cells[row][col].setHorizontalAlignment(
+                        JTextField.CENTER);
+
+                cells[row][col].setFont(
+                        new Font("Arial", Font.BOLD, 20));
+
+                // Fixed numbers
+                if (puzzle[row][col] != 0) {
+
+                    cells[row][col].setText(
+                            String.valueOf(puzzle[row][col]));
+
+                    // Prevent changing fixed numbers
+                    cells[row][col].setEditable(false);
+
+                    cells[row][col].setBackground(Color.LIGHT_GRAY);
+                }
+
+                // Add input validation
+                cells[row][col].addKeyListener(new KeyAdapter() {
+
+                    public void keyTyped(KeyEvent e) {
+
+                        char c = e.getKeyChar();
+
+                        // Allow only numbers 1 to 4
+                        if (c < '1' || c > '4') {
+                            e.consume();
+
+                            JOptionPane.showMessageDialog(
+                                    null,
+                                    "Please enter a number from 1 to 4."
+                            );
+                        }
+                    }
+                });
+
+                gridPanel.add(cells[row][col]);
+            }
+        }
+
+        add(gridPanel
