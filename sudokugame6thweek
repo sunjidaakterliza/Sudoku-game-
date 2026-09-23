@@ -1,0 +1,239 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class SudokuGame extends JFrame {
+
+    JTextField[][] cells = new JTextField[4][4];
+
+    public SudokuGame() {
+
+        setTitle("4x4 Sudoku Game");
+        setSize(450, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+
+        // Title
+        JLabel title = new JLabel("4x4 Sudoku Game", JLabel.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 24));
+        mainPanel.add(title, BorderLayout.NORTH);
+
+        // 4x4 Grid
+        JPanel gridPanel = new JPanel(
+                new GridLayout(4, 4, 5, 5)
+        );
+
+        // Create cells
+        for (int row = 0; row < 4; row++) {
+
+            for (int col = 0; col < 4; col++) {
+
+                cells[row][col] = new JTextField();
+
+                cells[row][col].setHorizontalAlignment(
+                        JTextField.CENTER
+                );
+
+                cells[row][col].setFont(
+                        new Font("Arial", Font.BOLD, 22)
+                );
+
+                gridPanel.add(cells[row][col]);
+            }
+        }
+
+        mainPanel.add(gridPanel, BorderLayout.CENTER);
+
+        // Buttons
+        JButton checkButton = new JButton("Check");
+        JButton clearButton = new JButton("Clear");
+
+        JPanel buttonPanel = new JPanel();
+
+        buttonPanel.add(checkButton);
+        buttonPanel.add(clearButton);
+
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Check button
+        checkButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+
+                checkSudoku();
+            }
+        });
+
+        // Clear button
+        clearButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+
+                clearGrid();
+            }
+        });
+
+        add(mainPanel);
+        setVisible(true);
+    }
+
+    // Main Sudoku checking method
+    public void checkSudoku() {
+
+        // Check numbers
+        for (int row = 0; row < 4; row++) {
+
+            for (int col = 0; col < 4; col++) {
+
+                String value = cells[row][col].getText().trim();
+
+                if (value.isEmpty()) {
+                    continue;
+                }
+
+                // Check valid number
+                if (!value.equals("1")
+                        && !value.equals("2")
+                        && !value.equals("3")
+                        && !value.equals("4")) {
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Invalid number! Enter only 1 to 4.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+
+                    return;
+                }
+
+                int number = Integer.parseInt(value);
+
+                // Check row
+                if (checkRow(row, col, number)) {
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Duplicate number in row " + (row + 1),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+
+                    return;
+                }
+
+                // Check column
+                if (checkColumn(row, col, number)) {
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Duplicate number in column " + (col + 1),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+
+                    return;
+                }
+
+                // Check 2x2 box
+                if (checkBox(row, col, number)) {
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Duplicate number in 2x2 box!",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+
+                    return;
+                }
+            }
+        }
+
+        JOptionPane.showMessageDialog(
+                this,
+                "All numbers are valid!",
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    // Check duplicate in row
+    public boolean checkRow(int row, int col, int number) {
+
+        for (int j = 0; j < 4; j++) {
+
+            if (j != col) {
+
+                String value = cells[row][j].getText().trim();
+
+                if (value.equals(String.valueOf(number))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // Check duplicate in column
+    public boolean checkColumn(int row, int col, int number) {
+
+        for (int i = 0; i < 4; i++) {
+
+            if (i != row) {
+
+                String value = cells[i][col].getText().trim();
+
+                if (value.equals(String.valueOf(number))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // Check duplicate in 2x2 box
+    public boolean checkBox(int row, int col, int number) {
+
+        int startRow = (row / 2) * 2;
+        int startCol = (col / 2) * 2;
+
+        for (int i = startRow; i < startRow + 2; i++) {
+
+            for (int j = startCol; j < startCol + 2; j++) {
+
+                if (i != row || j != col) {
+
+                    String value = cells[i][j].getText().trim();
+
+                    if (value.equals(String.valueOf(number))) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // Clear grid
+    public void clearGrid() {
+
+        for (int row = 0; row < 4; row++) {
+
+            for (int col = 0; col < 4; col++) {
+
+                cells[row][col].setText("");
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+
+        new SudokuGame();
+    }
+}
